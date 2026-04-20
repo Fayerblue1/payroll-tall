@@ -14,6 +14,8 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     })->name('dashboard');
 
+    Route::get('/departemen', App\Livewire\Master\DepartemenIndex::class)->name('departemen.index');
+
     Route::post('/logout', function(Request $request) {
         Auth::logout();
         $request->session()->invalidate();

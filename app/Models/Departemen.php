@@ -18,7 +18,7 @@ class Departemen extends Model
      *Realasi One-to-many: 1 Departemen bisa punya banyak jabatan*
      */
 
-     public function jabatans()
+     public function jabatan()
      {
         return $this->hasMany(Jabatan::class);
      }
