@@ -16,11 +16,11 @@
         </div>
     @endif
 
-    @error(session()->has('eror'))
+    @if(session()->has('eror'))
         <div class="mb-4 bg-red-100 border-red-400 text-red-700 rounded-md">
             {{ session('error') }}
         </div>
-    @enderror
+    @endif
 
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
         <div class="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
