@@ -69,7 +69,9 @@
                 </tbody>
             </table>
         </div>
-        <div class="p-4 border-t border-gray-200"></div>
+        <div class="p-4 border-t border-gray-200">
+            {{ $departemens->links() }}
+        </div>
     </div>
 
     @if ($isOpen)
