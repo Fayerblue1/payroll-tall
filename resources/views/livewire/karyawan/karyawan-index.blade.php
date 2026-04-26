@@ -4,7 +4,7 @@
             <h2 class="text-2xl font-bold text-gray-800">Data Karyawan</h2>
             <p class="text-sm text-gray-600">Daftar lengkap seluruh karyawan perusahaan.</p>
         </div>
-        <button wire:click='alertNotFinish()'
+        <button wire:click='create'
             class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md shadow-sm transition">
             + Tambah Karyawan
         </button>
@@ -20,7 +20,7 @@
 
         <div class="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
             <div class="w-full max-w-md relative">
-                <input type="text" placeholder="Cari NIK atau Nama Karyawan..." wire:model.live="search"
+                <input type="text" placeholder="Cari NIK atau Nama Karyawan..." wire:model.live.debounce.300ms="search"
                     class="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
                 <span class="absolute right-3 top-2 text-gray-400">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -63,9 +63,9 @@
                             <td class="px-6 py-4 text-sm text-center font-medium flex justify-center gap-3">
                                 <button wire:click="showDetail ({{ $karyawan->id }})"
                                     class="text-blue-600 hover:text-blue-900">Detail</button>
-                                <button wire:click="alertNotFinish"
+                                <button wire:click="edit{{ $karyawan->id }}"
                                     class="text-orange-500 hover:text-orange-700">Edit</button>
-                                <button wire:click="alertNotFinish"
+                                <button wire:click="delete{{ $karyawan->id }}" wire:confirm="Apakah anda yakin  Ingin menghapus karyawan ini?"
                                     class="text-red-600 hover:text-red-900">Hapus</button>
                             </td>
                         </tr>
@@ -85,82 +85,153 @@
         </div>
     </div>
 
-    <div x-show="isFormModalOpen" style="display: none;"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
-        <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" @click="isFormModalOpen = false">
-        </div>
-
-        <div
-            class="relative bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden z-10 flex flex-col max-h-[95vh]">
-
-            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
-                <h3 class="text-xl font-bold text-gray-800">
-                    Tambah/Edit Karyawan
-                </h3>
-                <button @click="isFormModalOpen = false" class="text-gray-400 hover:text-gray-600 focus:outline-none">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+    @if ($isFormModalOpen)
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
+            <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity"
+                @click="isFormModalOpen = false">
             </div>
 
-            <form class="overflow-y-auto" @submit.prevent="isFormModalOpen = false">
-                <div class="px-6 py-4 p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
-                            <h4 class="font-bold text-gray-700 mb-4 border-b pb-2">1. Data Pribadi</h4>
-                            <div class="mb-3">
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">NIK Karyawan</label>
-                                <input type="text"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500">
+            <div
+                class="relative bg-white rounded-xl shadow-2xl w-full max-w-4xl overflow-hidden z-10 flex flex-col max-h-[95vh]">
+
+                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-gray-800">
+                        {{ $karyawan_id ? 'Edit data Karyawan' : 'Tambah Data Karyawan Baru' }}
+                    </h3>
+                    <button wire:click="closeFormModal" type="button"
+                        class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <form class="overflow-y-auto" wire:submit.prevent="store">
+                    <div class="px-6 py-4 p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+                                <h4 class="font-bold text-gray-700 mb-4 border-b pb-2">1. Data Pribadi</h4>
+                                <div class="mb-3">
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">NIK Karyawan</label>
+                                    <input type="text" wire:model="nik"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Lengkap</label>
+                                    <input type="text" wire:model="nama"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">Email</label>
+                                    <input type="email" wire:model="email"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">Telepon</label>
+                                    <input type="text" wire:model="telepom"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">Jenis Kelamin</label>
+                                    <select wire:model="jenis_kelamin"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm bg-white focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">-- Pilih Jenis Kelamin --</option>
+                                        <option value="L">Laki-laki</option>
+                                        <option value="P">Perempuan</option>
+
+                                    </select>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Lengkap</label>
-                                <input type="text"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500">
+                            <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 shadow-sm">
+                                <h4 class="font-bold text-blue-800 mb-4 border-b border-blue-200 pb-2">2. Data Pekerjaan
+                                </h4>
+                                <div class="mb-3">
+                                    <label class="block text-xs font-semibold text-blue-800 mb-1">Departemen</label>
+                                    <select wire:model.live="departemen_id"
+                                        class="w-full px-3 py-2 border border-blue-200 rounded-md text-sm bg-white focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">-- Pilih Departemen --</option>
+                                        @foreach ($departemens_dropdown as $item)
+                                            <option value="{{ $item->id }}">{{ $item->nama }}</option>
+                                        @endforeach ()
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="block text-xs font-semibold text-blue-800 mb-1">Departemen</label>
+                                    <select wire:model.live="jabatan_id"
+                                        class="w-full px-3 py-2 border border-blue-200 rounded-md text-sm bg-white focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">-- Pilih Jabatan --</option>
+                                        @foreach ($jabatans_dropdown as $item)
+                                            <option value="{{ $item->$id }}">{{ $item->nama }}</option>
+                                        @endforeach ()
+                                    </select>
+                                    @if (empty($departemen_id))
+                                        <span class="text-sm text-blue-500 mt-1 block">Pilih departemen dahulu</span>
+                                    @endif
+                                </div>
+                                <div class="mb3">
+                                    <label class="block text-xs font-semibold text-blue-800 mb-1">Tanggal Masuk</label>
+                                    <input type="date" wire:model="tanggal_masuk"
+                                        class="w-full px-3 py-2 border border-blue-200 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500">
+
+                                </div>
+                                <div class="mb3">
+                                    <label
+                                        class="block text-xs font-semibold text-blue-800 mb-1">Status Karyawan</label>
+                                    <select wire:model="status"
+                                        class="w-full px-3 py-2 border border-blue-200 rounded-md text-sm bg-white focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="">-- Pilih Status --</option>
+                                        <option value="aktif">Aktif</option>
+                                        <option value="tidak aktif">Tidak Aktif</option>
+
+                                    </select>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">Email</label>
-                                <input type="email"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500">
-                            </div>
-                        </div>
-                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 shadow-sm">
-                            <h4 class="font-bold text-blue-800 mb-4 border-b border-blue-200 pb-2">2. Data Pekerjaan
-                            </h4>
-                            <div class="mb-3">
-                                <label class="block text-xs font-semibold text-blue-800 mb-1">Departemen</label>
-                                <select
-                                    class="w-full px-3 py-2 border border-blue-200 rounded-md text-sm bg-white focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Pilih Departemen --</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="bg-green-50 p-4 rounded-lg border border-green-100 shadow-sm">
-                            <h4 class="font-bold text-green-800 mb-4 border-b border-green-200 pb-2">3. Data Finansial
-                            </h4>
-                            <div class="mb-3">
-                                <label class="block text-xs font-semibold text-green-800 mb-1">Nama Bank</label>
-                                <input type="text"
-                                    class="w-full px-3 py-2 border border-green-200 rounded-md text-sm focus:ring-green-500 focus:border-green-500">
+                            <div class="bg-green-50 p-4 rounded-lg border border-green-100 shadow-sm">
+                                <h4 class="font-bold text-green-800 mb-4 border-b border-green-200 pb-2">3. Data
+                                    Finansial
+                                </h4>
+                                <div class="mb-3">
+                                    <label class="block text-xs font-semibold text-green-800 mb-1">Nama Bank</label>
+                                    <input type="text" wire:model="bank" placeholder="BCA, BRI, Mandiri, DLL"
+                                        class="w-full px-3 py-2 border border-green-200 rounded-md text-sm focus:ring-green-500 focus:border-green-500">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="block text-xs font-semibold text-green-800 mb-1">Nomor
+                                        Rekining</label>
+                                    <input type="text" wire:model="no_rekening"
+                                        class="w-full px-3 py-2 border border-green-200 rounded-md text-sm focus:ring-green-500 focus:border-green-500">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="block text-xs font-semibold text-green-800 mb-1">Gaji Pokok
+                                        Dasar</label>
+                                    <input type="number" wire:model="gaji_pokok" wire:change="updateGaji($event.target.value)"
+                                        class="w-full px-3 py-2 border border-green-200 rounded-md text-sm focus:ring-green-500 focus:border-green-500">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="block text-xs font-semibold text-green-800 mb-1">Tunjangan</label>
+                                    <input type="number" wire:model="tunjangan"
+                                        class="w-full px-3 py-2 border border-green-200 rounded-md text-sm focus:ring-green-500 focus:border-green-500">
+                                </div>
+
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="bg-gray-50 px-6 py-4 flex justify-end gap-3 border-t border-gray-200">
-                    <button type="button" @click="isFormModalOpen = false"
-                        class="px-5 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 font-medium transition">
-                        Batal
-                    </button>
-                    <button type="submit"
-                        class="px-5 py-2 bg-blue-600 border border-transparent rounded-lg text-white hover:bg-blue-700 font-medium transition">
-                        Simpan Data
-                    </button>
-                </div>
-            </form>
+                    <div class="bg-gray-50 px-6 py-4 flex justify-end gap-3 border-t border-gray-200">
+                        <button type="button" wire:click="closeFormModal()"
+                            class="px-5 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 font-medium transition">
+                            Batal
+                        </button>
+                        <button type="submit"
+                            class="px-5 py-2 bg-blue-600 border border-transparent rounded-lg text-white hover:bg-blue-700 font-medium transition">
+                            Simpan Data
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
+
+    @endif
 
     @if ($isDetailModalOpen && $karyawanDetail)
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
