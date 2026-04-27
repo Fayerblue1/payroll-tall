@@ -44,7 +44,7 @@ class KaryawanIndex extends Component
     }
 
     // AUto Fill gaji
-    public function updatedaji($value)
+    public function updatedJabatanId($value)
     {
         if($value) {
             $jabatan = Jabatan::find($value);
@@ -127,11 +127,11 @@ class KaryawanIndex extends Component
         $this->nik = $karyawan->nik;
         $this->nama = $karyawan->nama;
         $this->email = $karyawan->email;
-        $this->telepon = $karyawan->telepom;
+        $this->telepon = $karyawan->telepon;
         $this->jenis_kelamin = $karyawan->jenis_kelamin;
         $this->departemen_id = $karyawan->departemen_id;
         $this->jabatan_id = $karyawan->jabatan_id;
-        $this->tanggal_masuk = $karyawan->tanggal_msauk;
+        $this->tanggal_masuk = $karyawan->tanggal_masuk;
         $this->status = $karyawan->status;
         $this->bank = $karyawan->bank;
         $this->no_rekening = $karyawan->no_rekening;
@@ -188,7 +188,7 @@ class KaryawanIndex extends Component
 
     public function delete($id)
     {
-        Karyawan::findOrFail()->delete();
+        Karyawan::findOrFail($id)->delete();
         //$karyawan = Karyawan::findOrFail($id);
         //$karyawaan->delete();
 

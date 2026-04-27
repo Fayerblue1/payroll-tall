@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('gaji_pokok');
             $table->integer('tunjangan');
             $table->integer('potongan');
-            $table->integer('total-gaji');
+            $table->integer('total_gaji');
 
 
             $table->timestamps();

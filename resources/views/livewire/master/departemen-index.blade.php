@@ -16,7 +16,7 @@
         </div>
     @endif
 
-    @if(session()->has('eror'))
+    @if(session()->has('error'))
         <div class="mb-4 bg-red-100 border-red-400 text-red-700 rounded-md">
             {{ session('error') }}
         </div>

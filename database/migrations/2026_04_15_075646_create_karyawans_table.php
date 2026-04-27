@@ -15,11 +15,12 @@ return new class extends Migration
             $table->id();
 
             //Data Karyawan
-            $table->string('mik')->unique();
+            $table->string('nik')->unique();
             $table->string('nama');
             $table->string('email')->unique();
             $table->string('telepon');
             $table->enum('jenis_kelamin', ['L', 'P']);
+
             $table->date('tanggal_masuk');
 
             //Relasi
@@ -31,7 +32,7 @@ return new class extends Migration
             $table->integer('tunjangan')->default(0);
 
             //Administrasi
-            $table->string('status')->default('Aktif'); //Aktif, Cuti, Resign
+            $table->string('status')->default('aktif'); //Aktif, Cuti, Resign
             $table->string("bank");
             $table->string("no_rekening");
             

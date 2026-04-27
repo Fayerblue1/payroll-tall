@@ -56,7 +56,7 @@ class DatabaseSeeder extends Seeder
 
         foreach ($karyawan as $data) {
             Karyawan::create([
-                'mik' => $data['nik'],
+                'nik' => $data['nik'],
                 'nama' => $data['nama'],
                 'email' => $data['email'],
                 'telepon' => '08' .rand(100_000_000, 999_999_999),
@@ -66,7 +66,7 @@ class DatabaseSeeder extends Seeder
                 'jabatan_id' => $data['jabatan_id'],
                 'gaji_pokok' => $data['gaji'],
                 'tunjangan' => $data['tunjangan'],
-                'status' => 'Aktif',
+                'status' => 'aktif',
                 'bank' => ['BCA', 'Mandiri', 'BNI', 'BRI'][rand(0,3)],
                 'no_rekening' => '1234' .rand(100_000, 999_999),
             ]);

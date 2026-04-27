@@ -51,7 +51,7 @@
                             <td class="px-6 py-4 text-sm text-gray-600">{{ $karyawan->departemen->nama ?? '-' }}</td>
                             <td class="px-6 py-4 text-sm text-gray-600">{{ $karyawan->jabatan->nama ?? '-' }}</td>
                             <td class="px-6 py-4 text-sm">
-                                @if ($karyawan->status == 'Aktif')
+                                @if ($karyawan->status == 'aktif')
                                     <span
                                         class="bg-green-100 text-green-800 py-1 px-3 rounded-full text-xs font-semibold">Aktif</span>
                                 @else
@@ -63,9 +63,9 @@
                             <td class="px-6 py-4 text-sm text-center font-medium flex justify-center gap-3">
                                 <button wire:click="showDetail ({{ $karyawan->id }})"
                                     class="text-blue-600 hover:text-blue-900">Detail</button>
-                                <button wire:click="edit{{ $karyawan->id }}"
+                                <button wire:click="edit({{ $karyawan->id }})"
                                     class="text-orange-500 hover:text-orange-700">Edit</button>
-                                <button wire:click="delete{{ $karyawan->id }}" wire:confirm="Apakah anda yakin  Ingin menghapus karyawan ini?"
+                                <button wire:click="delete({{ $karyawan->id }})" wire:confirm="Apakah anda yakin  Ingin menghapus karyawan ini?"
                                     class="text-red-600 hover:text-red-900">Hapus</button>
                             </td>
                         </tr>
@@ -129,7 +129,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label class="block text-xs font-semibold text-gray-600 mb-1">Telepon</label>
-                                    <input type="text" wire:model="telepom"
+                                    <input type="text" wire:model="telepon"
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500">
                                 </div>
                                 <div class="mb-3">
@@ -153,7 +153,7 @@
                                         <option value="">-- Pilih Departemen --</option>
                                         @foreach ($departemens_dropdown as $item)
                                             <option value="{{ $item->id }}">{{ $item->nama }}</option>
-                                        @endforeach ()
+                                        @endforeach 
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -162,8 +162,8 @@
                                         class="w-full px-3 py-2 border border-blue-200 rounded-md text-sm bg-white focus:ring-blue-500 focus:border-blue-500">
                                         <option value="">-- Pilih Jabatan --</option>
                                         @foreach ($jabatans_dropdown as $item)
-                                            <option value="{{ $item->$id }}">{{ $item->nama }}</option>
-                                        @endforeach ()
+                                            <option value="{{ $item->id }}">{{ $item->nama }}</option>
+                                        @endforeach 
                                     </select>
                                     @if (empty($departemen_id))
                                         <span class="text-sm text-blue-500 mt-1 block">Pilih departemen dahulu</span>
@@ -182,7 +182,7 @@
                                         class="w-full px-3 py-2 border border-blue-200 rounded-md text-sm bg-white focus:ring-blue-500 focus:border-blue-500">
                                         <option value="">-- Pilih Status --</option>
                                         <option value="aktif">Aktif</option>
-                                        <option value="tidak aktif">Tidak Aktif</option>
+                                        <option value="non-aktif">Tidak Aktif</option>
 
                                     </select>
                                 </div>
